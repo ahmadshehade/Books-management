@@ -10,8 +10,10 @@ Route::get('/', function () {
     return view('welcome');
 })->middleware('guest')->name('loginPage');
 
-       Route::post('register',[UserAuthController::class, 'register'])->name('register');
-       Route::post('login',[UserAuthController::class, 'login'])->name('login');
+      Route::middleware('guest')->group(function (){
+          Route::post('register',[UserAuthController::class, 'register'])->name('register');
+          Route::post('login',[UserAuthController::class, 'login'])->name('login');
+      });
 
 
    Route::middleware('auth:web')
