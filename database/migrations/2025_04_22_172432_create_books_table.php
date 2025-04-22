@@ -18,16 +18,18 @@ return new class extends Migration
             $table->string('author_name', 255);
             $table->text('description'); // بدل string
             $table->float('price', 10, 2)->default(0);
-            $table->string('cover_image')->nullable(); // توضيح
+            $table->string('cover_image')->nullable();
+            $table->string('pdf_copy')->nullable();
             $table->string('isbn')->nullable();
             $table->date('published_at')->nullable();
             $table->integer('stock')->default(0);
-            $table->string('language', 10)->default('en');
+            $table->foreignId('language_id')->constrained('id')->on('languages')
+                ->onUpdate('cascade')->onDelete('cascade');
             $table->integer('pages')->nullable();
             $table->boolean('is_valid')->default(true);
             $table->timestamps();
         });
-        
+
     }
 
     /**

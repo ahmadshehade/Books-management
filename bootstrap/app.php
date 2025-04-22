@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // تسجيل Middleware باسم alias
+        $middleware->alias([
+            'redirect.auth' => \App\Http\Middleware\RedirectIfAuth::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -4,8 +4,9 @@ namespace App\Repositories\Book;
 
 use App\Interfaces\Book\BookListingInterface;
 use App\Models\Book;
+use App\Models\Language;
 
-class BookListingReposotory implements  BookListingInterface
+class BookListingReposotory implements BookListingInterface
 {
 
 
@@ -13,8 +14,9 @@ class BookListingReposotory implements  BookListingInterface
     {
 
         $books = Book::orderBy("created_at", "desc")->get();
+        $languages = Language::all();
 
-        return view('Book.index', compact("books"));
+        return view('Book.index', compact("books", "languages"));
 
     }
 

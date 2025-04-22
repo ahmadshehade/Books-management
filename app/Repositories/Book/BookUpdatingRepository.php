@@ -4,16 +4,21 @@ namespace App\Repositories\Book;
 
 use App\Interfaces\Book\BookUpdatingInterface;
 use App\Models\Book;
+use App\Models\Language;
+use App\Traits\FileTraits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class BookUpdatingRepository implements  BookUpdatingInterface
+class BookUpdatingRepository implements BookUpdatingInterface
 {
+    use FileTraits;
+
     public function edit($id)
     {
         $book = Book::findOrFail($id);
-        return view('Book.edit', compact('book'));
+        $languages = Language::all();
+        return view('Book.edit', compact('book', 'languages'));
     }
 
     public function update($id, $request)
@@ -32,14 +37,21 @@ class BookUpdatingRepository implements  BookUpdatingInterface
             $imagePath = $book->cover_image; // المسار الحالي للصورة
 
             if ($request->hasFile('cover_image')) {
-                // حذف الصورة القديمة إن وُجدت
-                if ($imagePath && Storage::disk('public')->exists($imagePath)) {
-                    Storage::disk('public')->delete($imagePath);
-                }
 
-                // حفظ الصورة الجديدة
-                $originalFileName = $request->file('cover_image')->getClientOriginalName();
-                $imagePath = $request->file('cover_image')->storeAs('cover_images', $originalFileName, 'public');
+                $this->deleteFile($imagePath);
+
+
+                $imagePath = $this->uploadFile($request, 'cover_image', 'cover_image');
+            }
+
+            $pdf_path = $book->pdf_copy;
+            if ($request->hasFile('pdf')) {
+
+                $this->deleteFile($pdf_path);
+
+
+                $pdf_path = $this->uploadFile($request, 'pdf', 'pdf_books');
+
             }
 
 
@@ -54,9 +66,10 @@ class BookUpdatingRepository implements  BookUpdatingInterface
                 'isbn' => $request->isbn,
                 'published_at' => $request->published_at,
                 'stock' => $request->stock,
-                'language' => $request->language,
+                'language_id' => $request->language_id,
                 'pages' => $request->pages,
                 'is_valid' => $request->has('is_valid') ? 1 : 0,
+                'pdf_copy' => $pdf_path,
             ]);
 
             DB::commit();

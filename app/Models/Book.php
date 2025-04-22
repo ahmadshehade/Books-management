@@ -16,9 +16,15 @@ class Book extends Model
         'isbn',
         'published_at',
         'stock',
-        'language',
+        'language_id',
         'pages',
         'is_valid',
+        'pdf_copy',
+
     ];
-    
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class,'language_id','id');
+    }
 }

@@ -4,19 +4,25 @@ namespace App\Repositories\Book;
 
 use App\Interfaces\Book\BookDeletionInterface;
 use App\Models\Book;
+use App\Traits\FileTraits;
 use Illuminate\Support\Facades\Storage;
 
-class BookDeletionRepository implements  BookDeletionInterface
+class BookDeletionRepository implements BookDeletionInterface
 {
+    use FileTraits;
 
     public function destroy($id)
     {
+
         $book = Book::findOrFail($id);
 
         // حذف الصورة من التخزين إن وُجدت
-        if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
-            Storage::disk('public')->delete($book->cover_image);
-        }
+
+        $this->deleteFile($book->cover_image);
+
+
+        $this->deleteFile($book->pdf_copy);
+
 
         // حذف الكتاب من قاعدة البيانات
         $book->delete();

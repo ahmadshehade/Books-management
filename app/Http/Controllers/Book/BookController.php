@@ -24,10 +24,10 @@ class BookController extends Controller
         BookListingInterface  $bookListing
     )
     {
-        $this->bookCreation=$bookCreation;
-        $this->bookUpdating=$bookUpdating;
-        $this->bookDeletion=$bookDeletion;
-        $this->bookListing=$bookListing;
+        $this->bookCreation = $bookCreation;
+        $this->bookUpdating = $bookUpdating;
+        $this->bookDeletion = $bookDeletion;
+        $this->bookListing = $bookListing;
     }
 
     /**

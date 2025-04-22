@@ -4,16 +4,20 @@ namespace App\Repositories\Book;
 
 use App\Interfaces\Book\BookCreationInterface;
 use App\Models\Book;
+use App\Models\Language;
+use App\Traits\FileTraits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BookCreationRepository implements BookCreationInterface
 {
+    use FileTraits;
 
     public function create()
     {
+        $languages = Language::all();
 
-        return view('Book.create');
+        return view('Book.create', compact('languages'));
     }
 
     public function store($request)
@@ -23,13 +27,16 @@ class BookCreationRepository implements BookCreationInterface
 
         try {
 
-
-            // حفظ الصورة إن وجدت
             $imagePath = null;
             if ($request->hasFile('cover_image')) {
-                $originalFileName = $request->file('cover_image')->getClientOriginalName();
-                $imagePath = $request->file('cover_image')->storeAs('cover_images', $originalFileName, 'public');
+
+                $imagePath = $this->uploadFile($request, 'cover_image', 'cover_image');
             }
+            $pdf_path = null;
+            if ($request->hasFile('pdf')) {
+                $pdf_path = $this->uploadFile($request, 'pdf', 'pdf_books');
+            }
+
 
             // إنشاء الكتاب
             $book = Book::create([
@@ -42,9 +49,11 @@ class BookCreationRepository implements BookCreationInterface
                 'isbn' => $request->isbn ?? null,
                 'published_at' => $request->published_at ?? null,
                 'stock' => $request->stock,
-                'language' => $request->language,
+                'language_id' => $request->language_id,
                 'pages' => $request->pages ?? null,
                 'is_valid' => $request->is_valid ?? true,
+                'pdf_copy' => $pdf_path,
+
             ]);
 
             DB::commit();
