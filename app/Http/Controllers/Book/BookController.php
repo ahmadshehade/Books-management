@@ -3,22 +3,39 @@
 namespace App\Http\Controllers\Book;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\Book\BookInterfcace;
+use App\Http\Requests\BookRequest;
+use App\Interfaces\Book\BookCreationInterface;
+use App\Interfaces\Book\BookUpdatingInterface;
+use App\Interfaces\Book\BookDeletionInterface;
+use App\Interfaces\Book\BookListingInterface;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    protected $book;
+    protected $bookCreation;
+    protected $bookUpdating;
+    protected $bookDeletion;
+    protected $bookListing;
 
-    public function __construct(BookInterfcace $book){
-        $this->book=$book;
+    public function __construct(
+        BookCreationInterface $bookCreation,
+        BookUpdatingInterface $bookUpdating,
+        BookDeletionInterface $bookDeletion,
+        BookListingInterface  $bookListing
+    )
+    {
+        $this->bookCreation=$bookCreation;
+        $this->bookUpdating=$bookUpdating;
+        $this->bookDeletion=$bookDeletion;
+        $this->bookListing=$bookListing;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-       return  $this->book->index();
+        return $this->bookListing->index();
     }
 
     /**
@@ -26,15 +43,15 @@ class BookController extends Controller
      */
     public function create()
     {
-        //
+        return $this->bookCreation->create();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        //
+        return $this->bookCreation->store($request);
     }
 
     /**
@@ -42,7 +59,7 @@ class BookController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return $this->bookListing->show($id);
     }
 
     /**
@@ -50,15 +67,15 @@ class BookController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return $this->bookUpdating->edit($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(BookRequest $request, $id)
     {
-        //
+        return $this->bookUpdating->update($id, $request);
     }
 
     /**
@@ -66,6 +83,6 @@ class BookController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return $this->bookDeletion->destroy($id);
     }
 }

@@ -53,6 +53,7 @@
                         <th>Stock</th>
                         <th>Status</th>
                         <th>ISBN</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,7 +62,7 @@
                             <td>{{ $book->id }}</td>
                             <td>
                                 @if($book->cover_image)
-                                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover" class="cover-img">
+                                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover" class="cover-img">
                                 @else
                                     <span class="text-muted">No image</span>
                                 @endif
@@ -70,7 +71,7 @@
                             <td>{{ $book->author_name }}</td>
                             <td>{{ strtoupper($book->language) }}</td>
                             <td>${{ number_format($book->price, 2) }}</td>
-                            <td>{{ $book->published_at ? $book->published_at->format('Y-m-d') : '-' }}</td>
+                            <td>{{ $book->published_at ? \Carbon\Carbon::parse($book->published_at)->format('Y-m-d') : 'nill' }}</td>
                             <td>{{ $book->stock }}</td>
                             <td>
                                 @if($book->is_valid)
@@ -80,16 +81,30 @@
                                 @endif
                             </td>
                             <td>{{ $book->isbn ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('books.show', $book->id) }}" class="btn btn-sm btn-info text-white">Show</a>
+                                <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-warning text-white">Edit</a>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $book->id }}">
+                                    Delete 
+                                </button>
+                            </td>
                         </tr>
+
+                        <!-- Modal for Deleting Book -->
+                        @include('Book.delete', ['book' => $book])
+                     
+
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center text-muted">No books found.</td>
+                            <td colspan="11" class="text-center text-muted">No books found.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            <a href="{{ route('books.create') }}" class="btn btn-primary w-100 mt-3">Add Book</a>
         </div>
     </div>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
