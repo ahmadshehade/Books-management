@@ -1,61 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Generating the README.md content in markdown format as requested
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+readme_content = """
+# 📚 نظام إدارة الكتب - Laravel 12
 
-## About Laravel
+نظام متكامل لإدارة الكتب مبني باستخدام Laravel 12، وتم تطويره وفقًا لمبادئ **SOLID** لضمان نظافة الكود، قابلية التوسعة، وقوة الصيانة.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✅ المبادئ البرمجية SOLID
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. مبدأ المسؤولية الواحدة (SRP)
+- كل Repository مسؤول عن وظيفة واحدة: إنشاء، تعديل، حذف أو عرض الكتب.
 
-## Learning Laravel
+### 2. مبدأ الفتح/الإغلاق (OCP)
+- يمكننا توسيع النظام بسهولة بإضافة Repository جديدة دون التعديل على الكود الموجود.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 3. مبدأ الاستبدال (LSP)
+- جميع الـ Repositories تستبدل الواجهات الخاصة بها دون أن تؤثر على سلوك النظام.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 4. مبدأ فصل الواجهات (ISP)
+- فصل الواجهات الكبيرة إلى واجهات صغيرة مثل:
+    - `BookCreationInterface`
+    - `BookUpdatingInterface`
+    - `BookDeletionInterface`
+    - `BookListingInterface`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 5. مبدأ عكس الاعتماد (DIP)
+- تعتمد الـ Controller على الـ Interface وليس على الكلاسات المباشرة.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🧱 تصميم الكيان الأساسي: الكتاب (Book)
 
-### Premium Partners
+### 1. قاعدة البيانات (Database Schema)
+تم إنشاء جدول `books` عبر Migration مخصص يحتوي على الحقول التالية:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+| الحقل             | الوصف |
+|-------------------|-------|
+| `id`              | المفتاح الأساسي |
+| `title`           | عنوان الكتاب، فريد |
+| `slug`            | نسخة صالحة للرابط من العنوان |
+| `author_name`     | اسم المؤلف |
+| `description`     | وصف تفصيلي للكتاب |
+| `price`           | السعر مع خانتين عشريتين |
+| `cover_image`     | مسار صورة الغلاف |
+| `isbn`            | الرقم الدولي الموحد |
+| `published_at`    | تاريخ النشر |
+| `stock`           | عدد النسخ المتوفرة |
+| `language`        | لغة الكتاب |
+| `pages`           | عدد الصفحات |
+| `is_valid`        | حالة صلاحية العرض |
+| `created_at/updated_at` | تواريخ التحديث |
 
-## Contributing
+### 2. الموديل (Model)
+الموديل `Book` يمثل الكيان `books` ويتحكم في البيانات المرتبطة به.  
+تم تحديد الخصائص `fillable` حتى نتحكم في القيم التي يمكن تمريرها من الطلبات (Requests).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```php
+protected $fillable = [
+  'title', 'slug', 'author_name', 'description', 'price',
+  'cover_image', 'isbn', 'published_at', 'stock',
+  'language', 'pages', 'is_valid',
+];
+3. الاستخدام عبر بنية MVC
+- Controller
+يتم حقن الواجهات الخاصة بكل عملية داخل الـ Controller، مما يجعل الكود مرنًا وسهل الاختبار.
 
-## Code of Conduct
+- Repositories
+كل Repository يقوم بوظيفة محددة:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+BookCreationRepository: إضافة الكتب إلى قاعدة البيانات.
 
-## Security Vulnerabilities
+BookUpdatingRepository: تعديل بيانات الكتب.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+BookDeletionRepository: حذف الكتب وصور الأغلفة.
 
-## License
+BookListingRepository: عرض وتفاصيل الكتب.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- View
+تم استخدام Blade templates لعرض النماذج (Forms) والبيانات داخل الواجهة الأمامية.
+
+- RAW Logic
+لم نستخدم TransactionService ككلاس مستقل، بل استخدمنا منطق إدارة المعاملات مباشرة داخل دوال store و update باستخدام:
+
+php
+Always show details
+
+Copy
+DB::beginTransaction();
+try {
+    // العمليات
+    DB::commit();
+} catch (\Exception $e) {
+    DB::rollBack();
+    throw $e;
+}
+هذا يضمن سلامة البيانات في حال حدوث خطأ أثناء تنفيذ العمليات الحساسة مثل الإنشاء أو التحديث. """
