@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title', 255)->unique();
             $table->string('slug')->unique(); // مفيد للرابط
-            $table->string('author_name', 255);
+            $table->foreignId('author_id')->constrained('id')->on('users')
+                ->onDelete('cascade')->onUpdate('cascade');
             $table->text('description'); // بدل string
             $table->float('price', 10, 2)->default(0);
             $table->string('cover_image')->nullable();
@@ -25,6 +26,8 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->foreignId('language_id')->constrained('id')->on('languages')
                 ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('type_id')->constrained('id')->on('book_types')
+            ->onDelete('cascade')->onUpdate('cascade');
             $table->integer('pages')->nullable();
             $table->boolean('is_valid')->default(true);
             $table->timestamps();

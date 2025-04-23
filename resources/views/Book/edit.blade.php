@@ -46,10 +46,26 @@
     </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand" href="#">📚 BookShelf</a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+        <span class="text-white"><i class="fas fa-user-circle me-1"></i> {{ auth()->user()->name ?? 'Guest' }}</span>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-outline-light"><i class="fas fa-sign-out-alt me-1"></i> Logout</button>
+        </form>
+    </div>
+</nav>
 
 <div class="container">
     <div class="form-container mx-auto col-md-8">
         <h2><i class="fas fa-edit me-2"></i>Edit Book</h2>
+        @if($book->cover_image)
+            <div class="mb-4">
+                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Book Cover"
+                     class="img-fluid rounded shadow-sm w-100" style="max-height: 400px; object-fit: cover;">
+            </div>
+        @endif
 
         @if(session('error'))
             <div class="alert alert-danger text-center">
@@ -63,94 +79,116 @@
 
             <div class="mb-3">
                 <label for="title" class="form-label">Book Title</label>
-                <input value="{{ old('title', $book->title) }}" type="text" name="title" id="title" class="form-control" required>
+                <input value="{{ old('title', $book->title) }}" type="text" name="title" id="title" class="form-control"
+                       required>
             </div>
 
+            <input type="hidden" name="author_id" value="{{ auth('web')->user()->id }}">
+
+            <!-- Visible field for author name (readonly) -->
             <div class="mb-3">
                 <label for="author_name" class="form-label">Author Name</label>
-                <input value="{{ old('author_name', $book->author_name) }}" type="text" name="author_name" id="author_name" class="form-control" required>
+                <input type="text" class="form-control" id="author_name" value="{{ auth('web')->user()->name }}"
+                       readonly>
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea name="description" id="description" rows="4" class="form-control">{{ old('description', $book->description) }}</textarea>
+                <textarea name="description" id="description" rows="4"
+                          class="form-control">{{ old('description', $book->description) }}</textarea>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="price" class="form-label">Price ($)</label>
-                    <input value="{{ old('price', $book->price) }}" type="number" step="0.01" name="price" id="price" class="form-control" required>
+                    <input value="{{ old('price', $book->price) }}" type="number" step="0.01" name="price" id="price"
+                           class="form-control" required>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="isbn" class="form-label">ISBN</label>
-                    <input value="{{ old('isbn', $book->isbn) }}" type="text" name="isbn" id="isbn" class="form-control">
+                    <input value="{{ old('isbn', $book->isbn) }}" type="text" name="isbn" id="isbn"
+                           class="form-control">
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="published_at" class="form-label">Published Date</label>
-                    <input value="{{ old('published_at', $book->published_at ? date('Y-m-d', strtotime($book->published_at)) : '') }}" type="date" name="published_at" id="published_at" class="form-control">
+                    <input
+                        value="{{ old('published_at', $book->published_at ? date('Y-m-d', strtotime($book->published_at)) : '') }}"
+                        type="date" name="published_at" id="published_at" class="form-control">
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="stock" class="form-label">Stock Quantity</label>
-                    <input value="{{ old('stock', $book->stock) }}" type="number" name="stock" id="stock" class="form-control" required>
+                    <input value="{{ old('stock', $book->stock) }}" type="number" name="stock" id="stock"
+                           class="form-control" required>
                 </div>
             </div>
-
-            <div class="mb-3">
-                <label for="language_id" class="form-label">Language</label>
-                <select class="form-select" name="language_id" id="language_id" required>
-                    @foreach($languages as $language)
-                        <option value="{{ $language->id }}" {{ $book->language->id == $language->id ? 'selected' : '' }}>
-                            {{ $language->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="pages" class="form-label">Pages</label>
-                    <input value="{{ old('pages', $book->pages) }}" type="number" name="pages" id="pages" class="form-control">
+            <div class='row'>
+                <div class=" col mb-3">
+                    <label for="language_id" class="form-label">Language</label>
+                    <select class="form-select" name="language_id" id="language_id" required>
+                        @foreach($languages as $language)
+                            <option
+                                value="{{ $language->id }}" {{ $book->language->id == $language->id ? 'selected' : '' }}>
+                                {{ $language->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-
-                <div class="col-md-6 mb-3 form-check mt-4">
-                    <input class="form-check-input" type="checkbox" name="is_valid" id="is_valid" value="1" {{ $book->is_valid ? 'checked' : '' }}>
-                    <label class="form-check-label" for="is_valid">Valid for Publishing</label>
+                <div class=" col mb-3">
+                    <label for="language_id" class="form-label">Book Type</label>
+                    <select class="form-select" name="type_id" id="type_id" required>
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}" {{ $book->type->id == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
+                </dev>
 
-            <div class="mb-3">
-                <label for="cover_image" class="form-label">Cover Image</label>
-                @if($book->cover_image)
-                    <div class="mb-2">
-                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Current Cover" style="width: 100px; height: 130px; object-fit: cover; border-radius: 6px;">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="pages" class="form-label">Pages</label>
+                        <input value="{{ old('pages', $book->pages) }}" type="number" name="pages" id="pages"
+                               class="form-control">
                     </div>
-                @endif
-                <input type="file" name="cover_image" id="cover_image" class="form-control" accept="image/*">
-            </div>
 
-            <div class="mb-3">
-                <label for="book_pdf" class="form-label">PDF File</label>
-                @if($book->pdf_copy)
-                    <div class="mb-2">
-                        <a href="{{ asset('storage/' . $book->pdf_copy) }}" target="_blank"><i class="fas fa-file-pdf me-1"></i>View Current PDF</a>
+                    <div class="col-md-6 mb-3 form-check mt-4">
+                        <input class="form-check-input" type="checkbox" name="is_valid" id="is_valid"
+                               value="1" {{ $book->is_valid ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_valid">Valid for Publishing</label>
                     </div>
-                @endif
-                <input type="file" name="pdf" id="book_pdf" class="form-control" accept="application/pdf">
-            </div>
+                </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Book
-                </button>
-                <a href="{{ route('books.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
-            </div>
+                <div class="mb-3">
+                    <label for="cover_image" class="form-label">Cover Image</label>
+
+                    <input type="file" name="cover_image" id="cover_image" class="form-control" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="book_pdf" class="form-label">PDF File</label>
+                    @if($book->pdf_copy)
+                        <div class="mb-2">
+                            <a href="{{ asset('storage/' . $book->pdf_copy) }}" target="_blank"><i
+                                    class="fas fa-file-pdf me-1"></i>View Current PDF</a>
+                        </div>
+                    @endif
+                    <input type="file" name="pdf" id="book_pdf" class="form-control" accept="application/pdf">
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Book
+                    </button>
+                    <a href="{{ route('books.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
         </form>
     </div>
 </div>

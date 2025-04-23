@@ -22,7 +22,21 @@ Route::middleware('redirect.auth')->group(function () {
 Route::middleware('auth:web')
     ->group(function () {
 
-        Route::resource('books', BookController::class);
+      
+
+        Route::get('books', [BookController::class, 'index'])->name('books.index'); // عرض كل الكتب
+        Route::get('books/create', [BookController::class, 'create'])->name('books.create'); // صفحة إنشاء كتاب
+        Route::post('books', [BookController::class, 'store'])->name('books.store'); // حفظ الكتاب الجديد
+        
+        Route::get('books/{book}', [BookController::class, 'show'])->name('books.show'); // عرض تفاصيل كتاب
+        
+        
+        Route::get('books/{book}/edit', [BookController::class, 'edit'])->name('books.edit')->middleware( 'canModifyBook');
+        Route::put('books/{book}', [BookController::class, 'update'])->name('books.update')->middleware( 'canModifyBook');
+        
+        
+        Route::delete('books/{book}', [BookController::class, 'destroy'])->name('books.destroy')->middleware( 'canModifyBook');
+        
 
         Route::post('logout', [UserAuthController::class, 'logout'])
             ->name('logout');

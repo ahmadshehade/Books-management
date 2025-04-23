@@ -21,12 +21,12 @@
             height: auto;
             border-radius: 10px;
             object-fit: cover;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .card {
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         .badge-valid {
@@ -71,6 +71,18 @@
                     <h3 class="m-0"><i class="fas fa-book-open me-2"></i>Book Details</h3>
                 </div>
                 <div class="card-body p-4">
+                    @if(session('success'))
+                        <div class="alert alert-success text-center">
+                            <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger text-center">
+                            <i class="fas fa-exclamation-circle me-1"></i> {{ session('error') }}
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-md-4 text-center">
                             @if($book->cover_image)
@@ -82,14 +94,16 @@
 
                         <div class="col-md-8">
                             <h3>{{ $book->title }}</h3>
-                            <p><span class="info-label">👤 Author:</span> {{ $book->author_name }}</p>
+                            <p><span class="info-label">👤 Author:</span> {{ $book->author->name }}</p>
                             <p><span class="info-label">🈯 Language:</span> {{ strtoupper($book->language->name) }}</p>
+                            <p><span class="info-label">🏷️ Type:</span> {{ $book->type->name ?? 'N/A' }}</p>
                             <p><span class="info-label">💲 Price:</span> ${{ number_format($book->price, 2) }}</p>
                             <p><span class="info-label">🔢 ISBN:</span> {{ $book->isbn ?? 'N/A' }}</p>
                             <p><span class="info-label">📄 Pages:</span> {{ $book->pages ?? 'N/A' }}</p>
                             <p><span class="info-label">📦 Stock:</span> {{ $book->stock }}</p>
                             <p><span class="info-label">📅 Published At:</span>
-                                {{ $book->published_at ? \Carbon\Carbon::parse($book->published_at)->format('Y-m-d') : 'N/A' }}</p>
+                                {{ $book->published_at ? \Carbon\Carbon::parse($book->published_at)->format('Y-m-d') : 'N/A' }}
+                            </p>
                             <p><span class="info-label">📝 Description:</span></p>
                             <p>{{ $book->description }}</p>
 
@@ -100,7 +114,8 @@
 
                             @if($book->pdf_copy)
                                 <div class="mt-3">
-                                    <a href="{{ asset('storage/' . $book->pdf_copy) }}" class="btn btn-outline-primary" target="_blank">
+                                    <a href="{{ asset('storage/' . $book->pdf_copy) }}" class="btn btn-outline-primary"
+                                       target="_blank">
                                         <i class="fas fa-file-pdf me-1"></i> Show PDF
                                     </a>
                                 </div>
@@ -111,8 +126,12 @@
                     </div>
                 </div>
                 <div class="card-footer text-center bg-light">
-                    <a href="{{ route('books.index') }}" class="btn btn-secondary me-2"><i class="fas fa-arrow-left me-1"></i> Back</a>
-                    <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary"><i class="fas fa-pen me-1"></i> Edit</a>
+                    <a href="{{ route('books.index') }}" class="btn btn-secondary me-2"><i
+                            class="fas fa-arrow-left me-1"></i> Back</a>
+                    @if ($book->author_id==auth('web')->user()->id)
+                        <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary"><i
+                                class="fas fa-pen me-1"></i> Edit</a>
+                    @endif
                 </div>
             </div>
         </div>

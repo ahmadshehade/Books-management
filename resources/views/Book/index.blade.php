@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <title>Books List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-uF+8WJYkN7Hl+/zJj8OIF6DLCXQBdWz8sVLKZgr1wAec6+DCYr8IzXZDWJ6qK6Q6XGmjUsqsy3wNifFZs5vURg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-uF+8WJYkN7Hl+/zJj8OIF6DLCXQBdWz8sVLKZgr1wAec6+DCYr8IzXZDWJ6qK6Q6XGmjUsqsy3wNifFZs5vURg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <style>
         body {
             background-color: #f9f9fb;
@@ -17,7 +21,7 @@
             height: 80px;
             object-fit: cover;
             border-radius: 6px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s ease;
         }
 
@@ -72,6 +76,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger text-center">
+            <i class="fas fa-exclamation-circle me-1"></i> {{ session('error') }}
+        </div>
+    @endif
+
+
     <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
             <thead class="table-dark">
@@ -101,7 +112,7 @@
                         @endif
                     </td>
                     <td>{{ $book->title }}</td>
-                    <td>{{ $book->author_name }}</td>
+                    <td>{{ $book->author->name }}</td>
                     <td>{{ strtoupper($book->language->abbreviation) }}</td>
                     <td>${{ number_format($book->price, 2) }}</td>
                     <td>{{ $book->published_at ? \Carbon\Carbon::parse($book->published_at)->format('Y-m-d') : 'N/A' }}</td>
@@ -113,16 +124,39 @@
                     </td>
                     <td>{{ $book->isbn ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('books.show', $book->id) }}" class="btn btn-sm btn-info">
-                            <i class="fas fa-eye"></i> Show
-                        </a>
-                        <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $book->id }}">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                                    id="actionsDropdown{{ $book->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bars"></i> Actions
+                            </button>
+                            <ul class="dropdown-menu text-center" aria-labelledby="actionsDropdown{{ $book->id }}">
+                                <li>
+                                    <a class="dropdown-item text-info" href="{{ route('books.show', $book->id) }}"
+                                       title="Show">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </li>
+
+                                @if ($book->author_id==auth('web')->user()->id)
+
+                                    <li>
+                                        <a class="dropdown-item text-warning"
+                                           href="{{ route('books.edit', $book->id) }}" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal{{ $book->id }}" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </li>
+                                @endif
+                            </ul>
+
+                        </div>
                     </td>
+
                 </tr>
 
                 @include('Book.delete', ['book' => $book])
@@ -134,7 +168,9 @@
             @endforelse
             </tbody>
         </table>
-
+        <div class="d-flex justify-content-center mt-4">
+            {{ $books->links('pagination::bootstrap-5') }}
+        </div>
         <a href="{{ route('books.create') }}" class="btn btn-primary w-100 mt-3">
             <i class="fas fa-plus-circle"></i> Add New Book
         </a>

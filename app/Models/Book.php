@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'title',
         'slug',
-        'author_name',
+        'author_id',
         'description',
         'price',
         'cover_image',
@@ -17,9 +19,11 @@ class Book extends Model
         'published_at',
         'stock',
         'language_id',
+        'type_id',
         'pages',
         'is_valid',
         'pdf_copy',
+
 
     ];
 
@@ -27,4 +31,16 @@ class Book extends Model
     {
         return $this->belongsTo(Language::class,'language_id','id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo(BookType::class, 'type_id', 'id');
+    }
+    
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id', 'id');
+    }
+    
+
 }

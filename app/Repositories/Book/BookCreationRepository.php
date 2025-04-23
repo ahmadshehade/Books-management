@@ -8,6 +8,7 @@ use App\Models\Language;
 use App\Traits\FileTraits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\BookType;
 
 class BookCreationRepository implements BookCreationInterface
 {
@@ -16,8 +17,10 @@ class BookCreationRepository implements BookCreationInterface
     public function create()
     {
         $languages = Language::all();
+        $types=BookType::all();
+        
 
-        return view('Book.create', compact('languages'));
+        return view('Book.create', compact('languages','types'));
     }
 
     public function store($request)
@@ -42,7 +45,7 @@ class BookCreationRepository implements BookCreationInterface
             $book = Book::create([
                 'title' => $request->title,
                 'slug' => Str::slug($request->title),
-                'author_name' => $request->author_name,
+                'author_id' => auth('web')->user()->id,
                 'description' => $request->description,
                 'price' => $request->price,
                 'cover_image' => $imagePath,
@@ -53,6 +56,7 @@ class BookCreationRepository implements BookCreationInterface
                 'pages' => $request->pages ?? null,
                 'is_valid' => $request->is_valid ?? true,
                 'pdf_copy' => $pdf_path,
+                'type_id' => $request->type_id,
 
             ]);
 

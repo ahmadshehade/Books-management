@@ -13,7 +13,7 @@ class BookListingReposotory implements BookListingInterface
     public function index()
     {
 
-        $books = Book::orderBy("created_at", "desc")->get();
+        $books = Book::orderBy("created_at", "asc")->paginate(5);
         $languages = Language::all();
 
         return view('Book.index', compact("books", "languages"));

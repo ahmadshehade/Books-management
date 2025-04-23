@@ -23,7 +23,7 @@ class BookRequest extends FormRequest
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'author_name' => 'required|string|max:255',
+            'author_id'=>'required|int|exists:users,id',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'isbn' => 'nullable|string|max:255',
@@ -32,6 +32,8 @@ class BookRequest extends FormRequest
             'language_id' => 'required|int|exists:languages,id',
             'pages' => 'nullable|integer|min:0',
             'is_valid' => 'nullable|boolean',
+            'type_id' => 'required|int|exists:book_types,id',
+         
         ];
 
         // شرط لتحديد هل هي عملية إنشاء أم تحديث
@@ -55,9 +57,9 @@ class BookRequest extends FormRequest
             'title.string' => 'The title must be a string.',
             'title.max' => 'The title may not be greater than 255 characters.',
 
-            'author_name.required' => 'The author name is required.',
-            'author_name.string' => 'The author name must be a string.',
-            'author_name.max' => 'The author name may not be greater than 255 characters.',
+            'author_id.required' => 'The author name is required.',
+            'author_id.ind' => 'The author name must be a integer.',
+            'author_id.exists' => 'The author_id must be a valid user ID.',
 
             'description.required' => 'The description field is required.',
             'description.string' => 'The description must be a string.',
@@ -92,6 +94,10 @@ class BookRequest extends FormRequest
             'pdf.file' => 'The PDF must be a file.',
             'pdf.mimes' => 'The PDF must be of type: pdf.',
             'pdf.max' => 'The PDF file may not be greater than 10MB.',
+
+            'type_id.required' => 'The book type is required.',
+            'type_id.int' => 'The book type ID must be an integer.',
+            'type_id.exists' => 'The selected book type does not exist.',
         ];
     }
 }

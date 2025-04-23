@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // تسجيل Middleware باسم alias
         $middleware->alias([
             'redirect.auth' => \App\Http\Middleware\RedirectIfAuth::class,
+            'canModifyBook'=>\App\Http\Middleware\ModifiBookMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

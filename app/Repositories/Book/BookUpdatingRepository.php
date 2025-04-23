@@ -9,7 +9,7 @@ use App\Traits\FileTraits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
+use App\Models\BookType;
 class BookUpdatingRepository implements BookUpdatingInterface
 {
     use FileTraits;
@@ -18,7 +18,8 @@ class BookUpdatingRepository implements BookUpdatingInterface
     {
         $book = Book::findOrFail($id);
         $languages = Language::all();
-        return view('Book.edit', compact('book', 'languages'));
+        $types=BookType::all();
+        return view('Book.edit', compact('book', 'languages','types'));
     }
 
     public function update($id, $request)
@@ -59,7 +60,7 @@ class BookUpdatingRepository implements BookUpdatingInterface
             $book->update([
                 'title' => $request->title,
                 'slug' => Str::slug($request->title),
-                'author_name' => $request->author_name,
+                'author_id' => auth('web')->user()->id,
                 'description' => $request->description,
                 'price' => $request->price,
                 'cover_image' => $imagePath,
@@ -70,6 +71,7 @@ class BookUpdatingRepository implements BookUpdatingInterface
                 'pages' => $request->pages,
                 'is_valid' => $request->has('is_valid') ? 1 : 0,
                 'pdf_copy' => $pdf_path,
+                'type_id' => $request->type_id,
             ]);
 
             DB::commit();

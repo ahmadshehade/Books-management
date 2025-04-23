@@ -69,9 +69,13 @@
                 <input type="text" class="form-control" name="title" id="title" required>
             </div>
 
+            <input type="hidden" name="author_id" value="{{ auth('web')->user()->id }}">
+
+            <!-- Visible field for author name (readonly) -->
             <div class="mb-3">
                 <label for="author_name" class="form-label">Author Name</label>
-                <input type="text" class="form-control" name="author_name" id="author_name" required>
+                <input type="text" class="form-control" id="author_name" value="{{ auth('web')->user()->name }}"
+                       readonly>
             </div>
 
             <div class="mb-3">
@@ -103,18 +107,32 @@
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label for="language_id" class="form-label">Language</label>
-                <select class="form-select" name="language_id" id="language_id" required>
-                    <option value="">-- Select Language --</option>
-                    @foreach($languages as $language)
-                        <option value="{{ $language->id }}" {{ old('language_id') == $language->id ? 'selected' : '' }}>
-                            {{ $language->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+            <div class="row">
+                <div class=" col mb-3">
+                    <label for="language_id" class="form-label">Language</label>
+                    <select class="form-select" name="language_id" id="language_id" required>
+                        <option value="">-- Select Language --</option>
+                        @foreach($languages as $language)
+                            <option
+                                value="{{ $language->id }}" {{ old('language_id') == $language->id ? 'selected' : '' }}>
+                                {{ $language->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
+                <div class="col mb-3">
+                    <label for="language_id" class="form-label">Book Type</label>
+                    <select class="form-select" name="type_id" id="type_id" required>
+                        <option value="">-- Select Book Type --</option>
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}" {{ old('type_id') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="pages" class="form-label">Number of Pages</label>
